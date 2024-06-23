@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/components/dialog_box.dart';
 import 'package:flutter_demo/components/todo_tile.dart';
+import 'package:flutter_demo/data/database.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,18 +12,56 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List toDoList = [
-    {"taskName": "Task 1", "taskCompleted": false},
-    {"taskName": "Task 2", "taskCompleted": false},
-    {"taskName": "Task 3", "taskCompleted": false},
-    {"taskName": "Task 4", "taskCompleted": false},
-    {"taskName": "Task 5", "taskCompleted": false},
-  ];
+  // reference the box
+  final _myBox = Hive.box('myBox');
+  ToDoDatabase db = ToDoDatabase();
+
+  @override
+  void initState() {
+    if (_myBox.get('TODOLIST') == null) {
+      db.createInitialData();
+      db.updateDatabase();
+    } else {
+      db.loadData();
+    }
+    super.initState();
+  }
+
+  final _controller = TextEditingController();
+
+  void deleteTask(int index) {
+    setState(() {
+      db.toDoList.removeAt(index);
+    });
+    db.updateDatabase();
+  }
+
+  void saveNewTask() {
+    setState(() {
+      db.toDoList.add({"taskName": _controller.text, "taskCompleted": false});
+      _controller.clear();
+      Navigator.of(context).pop();
+      db.updateDatabase();
+    });
+  }
+
+  void createTask() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return DialogBox(
+            controller: _controller,
+            onSave: saveNewTask,
+            onCancel: () => Navigator.of(context).pop(),
+          );
+        });
+  }
 
   void updateTask(int index, bool value) {
     setState(() {
-      toDoList[index]["taskCompleted"] = value;
+      db.toDoList[index]["taskCompleted"] = value;
     });
+    db.updateDatabase();
   }
 
   @override
@@ -28,13 +69,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         backgroundColor: Colors.yellow[200],
         appBar: AppBar(title: Text("TO DO"), centerTitle: true),
+        floatingActionButton: FloatingActionButton(
+          onPressed: createTask,
+          child: Icon(Icons.add),
+          backgroundColor: Colors.yellow,
+          shape: CircleBorder(),
+        ),
         body: ListView.builder(
             itemBuilder: (context, index) {
               return ToDoTile(
-                  taskName: toDoList[index]["taskName"],
-                  taskCompleted: toDoList[index]["taskCompleted"],
-                  onChanged: (value) => updateTask(index, value!));
+                  taskName: db.toDoList[index]["taskName"],
+                  taskCompleted: db.toDoList[index]["taskCompleted"],
+                  onChanged: (value) => updateTask(index, value!),
+                  deleteFunction: (context) => deleteTask(index));
             },
-            itemCount: toDoList.length));
+            itemCount: db.toDoList.length));
   }
 }

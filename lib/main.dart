@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_demo/pages/todo_page.dart';
+import 'package:flutter_demo/pages/home_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,6 +10,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: TodoPage());
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: HomePage(),
+        theme: ThemeData(
+          primarySwatch: Colors.yellow,
+          appBarTheme: AppBarTheme(backgroundColor: Colors.yellow),
+        ));
   }
 }

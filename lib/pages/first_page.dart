@@ -8,6 +8,30 @@ class FirstPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('First Page'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+                child: Icon(
+              Icons.account_circle,
+              size: 48,
+            )),
+            ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () => {
+                      Navigator.pop(context),
+                      Navigator.pushNamed(context, "/secondpage"),
+                    }),
+            ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: () => {
+                      Navigator.pushNamed(context, "/secondpage"),
+                    }),
+          ],
+        ),
+      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/pages/first_page.dart';
+import 'package:flutter_demo/pages/second_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -16,17 +18,9 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-            backgroundColor: Colors.blue[100],
-            body: GestureDetector(
-              onTap: userTapped,
-              child: Container(
-                width: 400,
-                height: 400,
-                color: Colors.blue[500],
-                child: Center(child: Text("Hello World!")),
-              ),
-            )));
+      debugShowCheckedModeBanner: false,
+      home: FirstPage(),
+      routes: {'/secondpage': (context) => SecondPage()},
+    );
   }
 }
